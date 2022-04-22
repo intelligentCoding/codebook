@@ -8,5 +8,5 @@ export const serveCommand = new Command()
     .action((filename = 'notebook.js', options: {port: string}) => {
         const dir = path.join(process.cwd(), path.dirname(filename));
 
-        serve(parseInt(options.port), path.basename(filename), dir)
+        serve(parseInt(options.port), path.basename(filename), dir);
     })
