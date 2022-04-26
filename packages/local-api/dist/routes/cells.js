@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,41 +62,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.serveCommand = void 0;
+exports.CreateCellsRouter = void 0;
+var express_1 = __importStar(require("express"));
+var promises_1 = __importDefault(require("fs/promises"));
 var path_1 = __importDefault(require("path"));
-var commander_1 = require("commander");
-var local_api_1 = require("local-api");
-var isProduction = process.env.NODE_ENV === 'production';
-exports.serveCommand = new commander_1.Command()
-    .command('serve [fileName]')
-    .description('Open a file for editing')
-    .option('-p, --port <number>', 'port to run a server on', '4005')
-    .action(function (filename, options) {
-    if (filename === void 0) { filename = 'notebook.js'; }
-    return __awaiter(void 0, void 0, void 0, function () {
-        var dir, err_1;
+var CreateCellsRouter = function (filename, dir) {
+    var router = express_1.default.Router();
+    var fullPath = path_1.default.join(dir, filename);
+    router.get('/cells', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/];
+        });
+    }); });
+    router.post('/cells', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var cells;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    dir = path_1.default.join(process.cwd(), path_1.default.dirname(filename));
-                    return [4 /*yield*/, (0, local_api_1.serve)(parseInt(options.port), path_1.default.basename(filename), dir, !isProduction)];
+                    cells = req.body.cells;
+                    return [4 /*yield*/, promises_1.default.writeFile(fullPath, JSON.stringify(cells), 'utf-8')];
                 case 1:
                     _a.sent();
-                    console.log("Opened ".concat(filename, " Navigate to http://localhost:").concat(options.port));
-                    return [3 /*break*/, 3];
-                case 2:
-                    err_1 = _a.sent();
-                    if (err_1.code === 'EADRINUSE') {
-                        console.log('Port is in use. Try running on a different port.');
-                    }
-                    else {
-                        console.log("here is the problem", err_1.message);
-                    }
-                    process.exit(1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    res.send({ status: 'ok' });
+                    return [2 /*return*/];
             }
         });
-    });
-});
+    }); });
+    return express_1.Router;
+};
+exports.CreateCellsRouter = CreateCellsRouter;
